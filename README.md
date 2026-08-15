@@ -49,11 +49,11 @@ Allergen information on food packaging is often written in dense scientific term
 </tr>
 </table>
 
-1. **Capture** — user selects their allergy type and photographs a product package
+1. **Capture** — user selects their allergy type(s) and photographs a product package
 2. **Locate** — a custom-trained YOLOv8 object detection model finds the ingredient list region on the packaging (bilingual Arabic/English labels are detected as separate boxes when they appear in different areas)
-3. **Read (OCR)** — the detected region is cropped from the original high-resolution image and passed to an OCR engine to extract the printed text
-4. **Match** — the extracted text is checked against a bilingual allergen keyword dictionary (with fuzzy matching to tolerate minor OCR reading errors)
-5. **Result** — the user sees a direct answer: **Safe**, or **Warning** with the specific allergen found
+3. **Read (OCR)** — the detected region is cropped from the original high-resolution image and passed to EasyOCR (Arabic + English) to extract the printed text
+4. **Match** — the extracted text is checked against a bilingual allergen dictionary covering 13 major allergen categories, with fuzzy matching (via RapidFuzz) to tolerate minor OCR reading errors
+5. **Result** — the user sees a direct answer: **Safe**, or **Warning** with the specific allergen(s) found
 
 ---
 
@@ -90,6 +90,25 @@ Final model, evaluated on a held-out test set:
 
 We deliberately chose the higher-recall version of the model over an earlier, higher-precision version. For a safety-related allergy app, missing a real ingredient label (a false negative) is a more dangerous failure than an extra, imprecise detection — so recall was prioritized.
 
+Validated on real product photos (e.g. a milk bottle with bilingual Arabic/English labeling), correctly detecting both the Arabic and English ingredient regions as separate boxes with high confidence (87% and 76% respectively).
+
+---
+
+## 🔎 OCR & Allergen Matching
+
+After the ingredient label region is cropped, **EasyOCR** (configured for both Arabic and English) extracts the printed text. This text is then checked against a custom bilingual allergen dictionary.
+
+**Allergen categories covered (13):** Milk, Egg, Peanut, Tree Nuts, Sesame, Gluten, Soy, Fish, Shellfish, Mustard, Celery, Sulphites, Corn — each mapped to its common scientific synonyms and derivative terms in both Arabic and English (e.g. milk → whey, casein, lactose, ghee, حليب, لبن, جبن...).
+
+Matching uses **RapidFuzz** for fuzzy string comparison, so minor OCR misreads (a common issue with small print) don't cause a missed detection. Users can also type in a free-text allergen not covered by the 13 categories (e.g. strawberry), which is matched directly against the extracted text.
+
+Example — end-to-end test on a real product photo:
+```
+Extracted text: "...Ingredients: Fresh Cow's Milk, Vitamin A, Vitamin D3..."
+Allergy checked: milk
+Result: {'safe': False, 'warnings': [{'allergy': 'milk', 'matched_term': 'milk'}]}
+```
+
 ---
 
 ## 🛠️ Tech Stack
@@ -99,7 +118,8 @@ We deliberately chose the higher-recall version of the model over an earlier, hi
 | **Roboflow**           | dataset annotation, versioning, augmentation            |
 | **Ultralytics YOLOv8** | label region detection                                  |
 | **Google Colab**       | model training (GPU)                                    |
-| **OCR**                | Tesseract / EasyOCR, Arabic + English — text extraction |
+| **EasyOCR**            | Arabic + English — text extraction                      |
+| **RapidFuzz**          | fuzzy text matching for allergen detection               |
 | **Python**             | allergen matching logic                                 |
 
 ---
@@ -108,11 +128,11 @@ We deliberately chose the higher-recall version of the model over an earlier, hi
 
 <div align="center">
 
-`Milk / Dairy`    `Peanuts`    `Sesame`    `Eggs`    `Tree Nuts`
+`Milk`    `Egg`    `Peanut`    `Tree Nuts`    `Sesame`    `Gluten`    `Soy`
+
+`Fish`    `Shellfish`    `Mustard`    `Celery`    `Sulphites`    `Corn`
 
 </div>
-
-— نكمل.
 
 ---
 
