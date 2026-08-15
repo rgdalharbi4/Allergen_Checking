@@ -5115,13 +5115,13 @@ else:
                             reader = load_ocr()
 
 
-                            cropped = extract_ingredient_region(
+                                                        crops = extract_ingredient_regions(
                                 image,
                                 model
                             )
 
 
-                            if cropped is None:
+                            if not crops:
 
                                 st.error(
                                     t['no_label']
@@ -5142,18 +5142,26 @@ else:
                                     """
                                 )
 
+                                # نعرض كل المناطق المكتشفة (مو وحدة بس)
+                                crop_cols = st.columns(len(crops))
 
-                                st.image(
-                                    cropped,
-                                    use_container_width=True
-                                )
+                                for crop_col, crop_img in zip(crop_cols, crops):
 
+                                    with crop_col:
 
-                                text = run_ocr(
-                                    cropped,
-                                    reader
-                                )
+                                        st.image(
+                                            crop_img,
+                                            use_container_width=True
+                                        )
 
+                                # نقرأ OCR من كل منطقة وندمج النصوص كلها
+                                # (مهم لو صندوق عربي وصندوق إنجليزي منفصلين)
+                                all_texts = [
+                                    run_ocr(crop_img, reader)
+                                    for crop_img in crops
+                                ]
+
+                                text = ' '.join(all_texts)
 
                                 if not text.strip():
 
