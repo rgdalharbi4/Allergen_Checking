@@ -5,6 +5,7 @@ from PIL import Image
 from ultralytics import YOLO
 import easyocr
 from rapidfuzz import fuzz
+from rapidfuzz import distance
 
 from database import (
     create_tables,
@@ -4296,9 +4297,15 @@ def load_ocr():
 
 
 def extract_ingredient_region(
+def extract_ingredient_regions(
     image,
     model
 ):
+    """
+    يرجع قائمة بكل مناطق ingredient_label المكتشفة (مو وحدة بس) —
+    مهم لأن نفس المنتج ممكن يكون فيه صندوقين منفصلين
+    (عربي وإنجليزي)، ولازم نقرأ الاثنين مع بعض.
+    """
 
     results = model(
         np.array(image),
@@ -4306,64 +4313,35 @@ def extract_ingredient_region(
         verbose=False
     )
 
-
     boxes = results[0].boxes
-
 
     if (
         boxes is None
         or len(boxes) == 0
     ):
+        return []
 
-        return None
+    crops = []
 
+    for box in boxes:
 
-    best_box = max(
-        boxes,
-        key=lambda box:
-            float(
-                box.conf[0]
-            )
-    )
-
-
-    box = (
-        best_box
-        .xyxy[0]
-        .cpu()
-        .numpy()
-    )
-
-
-    x1 = max(
-        int(box[0]),
-        0
-    )
-
-    y1 = max(
-        int(box[1]),
-        0
-    )
-
-    x2 = min(
-        int(box[2]),
-        image.width
-    )
-
-    y2 = min(
-        int(box[3]),
-        image.height
-    )
-
-
-    return image.crop(
-        (
-            x1,
-            y1,
-            x2,
-            y2
+        xyxy = (
+            box
+            .xyxy[0]
+            .cpu()
+            .numpy()
         )
-    )
+
+        x1 = max(int(xyxy[0]), 0)
+        y1 = max(int(xyxy[1]), 0)
+        x2 = min(int(xyxy[2]), image.width)
+        y2 = min(int(xyxy[3]), image.height)
+
+        crops.append(
+            image.crop((x1, y1, x2, y2))
+        )
+
+    return crops
 
 
 def run_ocr(
@@ -4390,7 +4368,6 @@ def find_matches(
 
     text_lower = text.lower()
 
-
     cleaned = (
         text_lower
         .replace(',', ' ')
@@ -4402,9 +4379,7 @@ def find_matches(
         .split()
     )
 
-
     matches = []
-
 
     for keyword in ALLERGEN_KEYWORDS.get(
         allergy,
@@ -4412,7 +4387,6 @@ def find_matches(
     ):
 
         key = keyword.lower()
-
 
         if key in text_lower:
 
@@ -4422,11 +4396,21 @@ def find_matches(
 
             continue
 
-
+        # كلمات قصيرة (زي milk, egg): نسمح بخطأ حرف واحد بس
+        # بدل ما نتجاهلها كلياً
         if len(key) <= 4:
 
-            continue
+            for word in cleaned:
 
+                if distance.Levenshtein.distance(word, key) <= 1:
+
+                    matches.append(
+                        keyword
+                    )
+
+                    break
+
+            continue
 
         for word in cleaned:
 
@@ -4441,11 +4425,9 @@ def find_matches(
 
                 break
 
-
     return list(
         set(matches)
     )
-
 
 def check_people(
     text,
