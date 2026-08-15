@@ -6,11 +6,23 @@
 
 <br>
 
-[![Live App](https://img.shields.io/badge/Live%20App-Streamlit-FF4B4B?style=for-the-badge\&logo=streamlit\&logoColor=white)](https://allergenchecking-ajyk5cmt3w2obg6z9quhuk.streamlit.app)
-![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=for-the-badge\&logo=python\&logoColor=white)
-![YOLOv8](https://img.shields.io/badge/YOLO-v8-00FFFF?style=for-the-badge)
-![Roboflow](https://img.shields.io/badge/Roboflow-Dataset-6706CE?style=for-the-badge)
+<div align="center">
 
+<a href="https://allergenchecking-ajyk5cmt3w2obg6z9quhuk.streamlit.app">
+  <img src="https://img.shields.io/badge/Live%20App-Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white">
+</a>
+
+<img src="https://img.shields.io/badge/Python-3.11-3776AB?style=for-the-badge&logo=python&logoColor=white">
+
+<a href="https://docs.ultralytics.com/models/yolov8/">
+  <img src="https://img.shields.io/badge/YOLO-v8-00FFFF?style=for-the-badge">
+</a>
+
+<a href="https://universe.roboflow.com/raghad-alharbi/ingredient-label-detection-d4hgy/dataset/2">
+  <img src="https://img.shields.io/badge/Roboflow-Dataset-6706CE?style=for-the-badge">
+</a>
+
+</div>
 </div>
 
 ---
