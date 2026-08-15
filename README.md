@@ -1,0 +1,72 @@
+# Allergen Detection from Product Ingredient Labels
+
+An AI-powered app that helps people with food allergies quickly check whether a supermarket product is safe for them — just by photographing it, instead of decoding a small, complex ingredient list.
+
+## Problem
+
+Allergen information on food packaging is often written in dense scientific terms (e.g. "casein" instead of "milk") in small print, which is a major real-world cause of allergy incidents. The information exists — it's just hard to read and understand quickly, especially for parents of allergic children or elderly shoppers.
+
+## How It Works (Pipeline)
+
+1. **Capture** — user selects their allergy type and photographs a product package
+2. **Locate** — a custom-trained YOLOv8 object detection model finds the ingredient list region on the packaging (bilingual Arabic/English labels are detected as separate boxes when they appear in different areas)
+3. **Read (OCR)** — the detected region is cropped from the original high-resolution image and passed to an OCR engine to extract the printed text
+4. **Match** — the extracted text is checked against a bilingual allergen keyword dictionary (with fuzzy matching to tolerate minor OCR reading errors)
+5. **Result** — the user sees a direct answer: **Safe**, or **Warning** with the specific allergen found
+
+## Dataset
+
+- **Classes (1):** `ingredient_label`
+- **Source:** Combination of a public Roboflow dataset (385 images) and ~110 real product photos collected by the team, annotated in Roboflow
+- **Why combine sources:** an initial model trained only on the public dataset scored very high on paper (~99.5% mAP) but performed poorly on real, self-photographed products — a classic overfitting/generalization gap. Adding real local product photos was necessary to make the model actually work in practice.
+- **Hosted on Roboflow:** [ingredient-label-detection-d4hgy](https://universe.roboflow.com/raghad-alharbi/ingredient-label-detection-d4hgy/dataset/2)
+
+Images are not stored in this repository (the dataset is large after augmentation). To download it:
+
+```python
+from roboflow import Roboflow
+rf = Roboflow(api_key="YOUR_API_KEY")
+project = rf.workspace("raghad-alharbi").project("ingredient-label-detection-d4hgy")
+dataset = project.version(2).download("yolov8")
+```
+
+## Model & Results
+
+**Architecture:** YOLOv8n (Ultralytics), standard object detection (not oriented/OBB, not segmentation)
+
+Final model, evaluated on a held-out test set:
+
+| Metric | Score |
+|---|---|
+| Precision | 88.2% |
+| Recall | 82.5% |
+| mAP50 | 85.8% |
+| mAP50-95 | 56.9% |
+
+We deliberately chose the higher-recall version of the model over an earlier, higher-precision version. For a safety-related allergy app, missing a real ingredient label (a false negative) is a more dangerous failure than an extra, imprecise detection — so recall was prioritized.
+
+## Tech Stack
+
+- **Roboflow** — dataset annotation, versioning, augmentation
+- **Ultralytics YOLOv8** — label region detection
+- **Google Colab** — model training (GPU)
+- **OCR** (Tesseract / EasyOCR, Arabic + English) — text extraction
+- **Python** — allergen matching logic
+
+## Project Structure
+
+```
+ingredient-label-detection/
+├── data.yaml
+├── train/ valid/ test/     # dataset (download via Roboflow, see above)
+├── allergen_dictionary.py  # bilingual allergen keyword matcher
+└── README.md
+```
+
+## Allergen Categories Covered
+
+Milk/Dairy, Peanuts, Sesame, Eggs, Tree Nuts — chosen as the most common and relevant allergens for the local market.
+
+## Team
+
+Data Science & AI Bootcamp — Capstone Module Project
