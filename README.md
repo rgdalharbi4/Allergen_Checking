@@ -144,6 +144,6 @@ Result: {'safe': False, 'warnings': [{'allergy': 'milk', 'matched_term': 'milk'}
 
 <div align="center">
 
-### 🌐 [Open the Streamlit App](https://allergenchecking-ajyk5cmt3w2obg6z9quhuk.streamlit.app)
+### 🌐 [Open the Streamlit App](https://allergenchecking.streamlit.app)
 
 </div>
