@@ -1721,8 +1721,21 @@ def extract_ingredient_regions(
 
 def run_ocr(
     image,
-    reader
+    reader,
+    max_side=1000
 ):
+    # نصغّر الصورة قبل الـ OCR لو كانت كبيرة —
+    # يسرّع المعالجة كثير على سيرفر محدود الموارد
+    # بدون ما يأثر على وضوح النص (النص يبقى مقروء بسهولة)
+    w, h = image.size
+
+    if max(w, h) > max_side:
+
+        scale = max_side / max(w, h)
+
+        image = image.resize(
+            (int(w * scale), int(h * scale))
+        )
 
     results = reader.readtext(
         np.array(image),
