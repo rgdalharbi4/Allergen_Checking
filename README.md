@@ -53,20 +53,11 @@ We deliberately chose the higher-recall version of the model over an earlier, hi
 - **OCR** (Tesseract / EasyOCR, Arabic + English) — text extraction
 - **Python** — allergen matching logic
 
-## Project Structure
-
-```
-ingredient-label-detection/
-├── data.yaml
-├── train/ valid/ test/     # dataset (download via Roboflow, see above)
-├── allergen_dictionary.py  # bilingual allergen keyword matcher
-└── README.md
-```
 
 ## Allergen Categories Covered
 
-Milk/Dairy, Peanuts, Sesame, Eggs, Tree Nuts — chosen as the most common and relevant allergens for the local market.
+Milk/Dairy, Peanuts, Sesame, Eggs, Tree Nuts — نكمل.
 
 ## Team
 
-Data Science & AI Bootcamp — Capstone Module Project
+Data Science & AI Bootcamp
