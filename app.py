@@ -513,6 +513,21 @@ header {
     letter-spacing: -1.7px;
 }
 
+.logo-ar {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: 0;
+    margin-inline-start: 10px;
+    background:
+        linear-gradient(
+            90deg,
+            var(--green),
+            var(--cyan)
+        );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
 
 /* HERO */
 
@@ -1860,7 +1875,7 @@ with logo_col:
     st.html(
         """
         <div class="logo">
-            mosabb
+            mosabb<span class="logo-ar">مسبب</span>
         </div>
         """
     )
