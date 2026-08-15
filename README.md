@@ -1,12 +1,41 @@
-# Allergen Detection from Product Ingredient Labels
+<div align="center">
+
+# 🥗 Allergen Detection from Product Ingredient Labels
+
+### AI-powered food allergen detection from product ingredient labels
+
+<br>
+
+[![Live App](https://img.shields.io/badge/Live%20App-Streamlit-FF4B4B?style=for-the-badge\&logo=streamlit\&logoColor=white)](https://allergenchecking-ajyk5cmt3w2obg6z9quhuk.streamlit.app)
+![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=for-the-badge\&logo=python\&logoColor=white)
+![YOLOv8](https://img.shields.io/badge/YOLO-v8-00FFFF?style=for-the-badge)
+![Roboflow](https://img.shields.io/badge/Roboflow-Dataset-6706CE?style=for-the-badge)
+
+</div>
+
+---
 
 An AI-powered app that helps people with food allergies quickly check whether a supermarket product is safe for them — just by photographing it, instead of decoding a small, complex ingredient list.
 
-## Problem
+---
+
+## 🚨 Problem
 
 Allergen information on food packaging is often written in dense scientific terms (e.g. "casein" instead of "milk") in small print, which is a major real-world cause of allergy incidents. The information exists — it's just hard to read and understand quickly, especially for parents of allergic children or elderly shoppers.
 
-## How It Works (Pipeline)
+---
+
+## ⚙️ How It Works (Pipeline)
+
+<table>
+<tr>
+<td align="center"><b>📸 1. Capture</b></td>
+<td align="center"><b>🎯 2. Locate</b></td>
+<td align="center"><b>🔎 3. Read</b></td>
+<td align="center"><b>🧠 4. Match</b></td>
+<td align="center"><b>✅ 5. Result</b></td>
+</tr>
+</table>
 
 1. **Capture** — user selects their allergy type and photographs a product package
 2. **Locate** — a custom-trained YOLOv8 object detection model finds the ingredient list region on the packaging (bilingual Arabic/English labels are detected as separate boxes when they appear in different areas)
@@ -14,12 +43,14 @@ Allergen information on food packaging is often written in dense scientific term
 4. **Match** — the extracted text is checked against a bilingual allergen keyword dictionary (with fuzzy matching to tolerate minor OCR reading errors)
 5. **Result** — the user sees a direct answer: **Safe**, or **Warning** with the specific allergen found
 
-## Dataset
+---
 
-- **Classes (1):** `ingredient_label`
-- **Source:** Combination of a public Roboflow dataset (385 images) and ~110 real product photos collected by the team, annotated in Roboflow
-- **Why combine sources:** an initial model trained only on the public dataset scored very high on paper (~99.5% mAP) but performed poorly on real, self-photographed products — a classic overfitting/generalization gap. Adding real local product photos was necessary to make the model actually work in practice.
-- **Hosted on Roboflow:** [ingredient-label-detection-d4hgy](https://universe.roboflow.com/raghad-alharbi/ingredient-label-detection-d4hgy/dataset/2)
+## 📦 Dataset
+
+* **Classes (1):** `ingredient_label`
+* **Source:** Combination of a public Roboflow dataset (385 images) and ~110 real product photos collected by the team, annotated in Roboflow
+* **Why combine sources:** an initial model trained only on the public dataset scored very high on paper (~99.5% mAP) but performed poorly on real, self-photographed products — a classic overfitting/generalization gap. Adding real local product photos was necessary to make the model actually work in practice.
+* **Hosted on Roboflow:** [ingredient-label-detection-d4hgy](https://universe.roboflow.com/raghad-alharbi/ingredient-label-detection-d4hgy/dataset/2)
 
 Images are not stored in this repository (the dataset is large after augmentation). To download it:
 
@@ -30,34 +61,57 @@ project = rf.workspace("raghad-alharbi").project("ingredient-label-detection-d4h
 dataset = project.version(2).download("yolov8")
 ```
 
-## Model & Results
+---
+
+## 📊 Model & Results
 
 **Architecture:** YOLOv8n (Ultralytics), standard object detection (not oriented/OBB, not segmentation)
 
 Final model, evaluated on a held-out test set:
 
-| Metric | Score |
-|---|---|
-| Precision | 88.2% |
-| Recall | 82.5% |
-| mAP50 | 85.8% |
-| mAP50-95 | 56.9% |
+| Metric        |     Score |
+| ------------- | --------: |
+| **Precision** | **88.2%** |
+| **Recall**    | **82.5%** |
+| **mAP50**     | **85.8%** |
+| **mAP50-95**  | **56.9%** |
 
 We deliberately chose the higher-recall version of the model over an earlier, higher-precision version. For a safety-related allergy app, missing a real ingredient label (a false negative) is a more dangerous failure than an extra, imprecise detection — so recall was prioritized.
 
-## Tech Stack
+---
 
-- **Roboflow** — dataset annotation, versioning, augmentation
-- **Ultralytics YOLOv8** — label region detection
-- **Google Colab** — model training (GPU)
-- **OCR** (Tesseract / EasyOCR, Arabic + English) — text extraction
-- **Python** — allergen matching logic
+## 🛠️ Tech Stack
 
+| Technology             | Usage                                                   |
+| ---------------------- | ------------------------------------------------------- |
+| **Roboflow**           | dataset annotation, versioning, augmentation            |
+| **Ultralytics YOLOv8** | label region detection                                  |
+| **Google Colab**       | model training (GPU)                                    |
+| **OCR**                | Tesseract / EasyOCR, Arabic + English — text extraction |
+| **Python**             | allergen matching logic                                 |
 
-## Allergen Categories Covered
+---
 
-Milk/Dairy, Peanuts, Sesame, Eggs, Tree Nuts — نكمل.
+## 🥜 Allergen Categories Covered
 
-## Team
+<div align="center">
 
-Data Science & AI Bootcamp
+`Milk / Dairy`    `Peanuts`    `Sesame`    `Eggs`    `Tree Nuts`
+
+</div>
+
+— نكمل.
+
+---
+
+## 👥 Team
+
+**Data Science & AI Bootcamp**
+
+---
+
+<div align="center">
+
+### 🌐 [Open the Streamlit App](https://allergenchecking-ajyk5cmt3w2obg6z9quhuk.streamlit.app)
+
+</div>
