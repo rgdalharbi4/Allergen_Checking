@@ -8,7 +8,7 @@
 
 <div align="center">
 
-<a href="https://allergenchecking-ajyk5cmt3w2obg6z9quhuk.streamlit.app">
+<a href="https://allergenchecking.streamlit.app">
   <img src="https://img.shields.io/badge/Live%20App-Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white">
 </a>
 
